@@ -15,9 +15,9 @@ We are asked to evaluate the following code snippet
 
 ```{r code snippets}
 x1 <- 1/3 ; x2 <- 1/4
-if ( x1 - x2 == 1/12){
+if (x1 - x2 == 1/12){
   print("substraction is correct")
-}else{
+} else {
   print("substraction is wrong")
 }
 ```
@@ -26,9 +26,9 @@ And this code snippet
 
 ```{r code snippets2}
 x1 <- 1 ; x2 <- 1/2
-if ( x1 - x2 == 1/2){
+if (x1 - x2 == 1/2){
   print("substraction is correct")
-}else{
+} else {
   print("substraction is wrong")
 }
 ```
@@ -100,14 +100,19 @@ Y <- c()
 for (i in 1:length(vect_x)){
   Y[i] <- myvar(vect_x[1:i]) - var(vect_x[1:i])
 }
+
+Y = Y[!is.na(Y)]
+
 ```
 
 and now we plot the dependence of $Y_i$ on $i$.
 
 ```{r variance_plot}
 data_Y <- data.frame(values = Y, len = 1:length(Y))
-plot_dependence <- ggplot(data = data_Y)+
-  geom_point(aes(x = len, y = values))+ xlab("i")+ylab("Y_i")
+plot_dependence <- ggplot(data = data_Y) +
+  geom_point(aes(x = len, y = values)) + 
+  xlab("i") +
+  ylab("Y_i")
 
 print(plot_dependence)
 ```
@@ -122,7 +127,7 @@ myvar_improved <- function(x){
             is.numeric(x))
   mu <- mean(x)
   n <- length(x)
-  variance_improved <- (sum(x - mu)^2)/(n-1)
+  variance_improved <- sum((x - mu)^2)/(n-1)
   return(variance_improved)
 }
 
@@ -131,10 +136,16 @@ for (i in 1:length(vect_x)){
   Y_improved[i] <- myvar_improved(vect_x[1:i]) - var(vect_x[1:i])
 }
 
+Y_improved = Y_improved[!is.na(Y_improved)]
+
 data_Y_improved <- data.frame(values = Y_improved, len = 1:length(Y_improved))
 
-plot_dependence_improved <- ggplot(data = data_Y_improved)+
-  geom_point(aes(x = len, y = values))+ xlab("i")+ylab("Y_i")
+plot_dependence_improved <- 
+  ggplot(data = data_Y_improved) +
+  geom_line(aes(x = len, y = values)) + 
+  xlab("i") +
+  ylab("Y_i") + 
+  ylim(-5,5)
 
 print(plot_dependence_improved)
 ```
