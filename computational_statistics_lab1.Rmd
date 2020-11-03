@@ -33,7 +33,7 @@ if (x1 - x2 == 1/2){
 }
 ```
 
-**Some explanation about the reason why this is. It probably has to do with how the 1/3 value is stored in a finite manner and that means that it's not really equal**
+In the first code snippet, the value of 1/3 is a infinite decimal number. In the floating point number representation, only a value that is similar to it is stored in the 64bits memory capacity. There is a rounding error called underflow that occurs when we operate on this value. In the second code snippet, no rounding error is made.
 
 One possibility to improve the first code is doing the following:
 
@@ -46,7 +46,7 @@ if (isTRUE(all.equal( x1 - x2, 1/2))){
 }
 ```
 
-This works because the **all.equal** method tests for "near equality" between the two quantities instead of exact results.
+This works because the **all.equal** method tests for "near equality" between the two quantities instead of exact results up to machine precision.
 
 ## Question 2: Derivative
 
@@ -73,8 +73,8 @@ derivative(x2)
 ```
 
 The true value of the derivative is 1.
-For $x = 1$, ((I think it's the same mechanism than for x = 100000, but it's less clear to me exactly why since x is small to start with this time around....))
-For $x = 100000$, we have the difference in the nominator that is evaluated to be zero and the division by $\epsilon$, which is small and doesn't get stored properly.
+For $x = 1$, there is underflow in the calculation as we loose significant digits when dividing.
+For $x = 100000$, we have the difference in the nominator that is evaluated to be zero and the division by $\epsilon$, which is small and doesn't get stored properly. We have underflow in this case
 
 
 ## Question 3: Variance
@@ -117,7 +117,7 @@ plot_dependence <- ggplot(data = data_Y) +
 print(plot_dependence)
 ```
 
-If myvar was a good estimate and close to the var function in R, we would expect to see all values of their difference to be equal to 0. This graph shows that the values are concentrated around -1. No clue how to explain this behavior....
+If myvar was a good estimate and close to the var function in R, we would expect to see all values of their difference to be equal to 0. This graph shows that the values are concentrated around -1. The substraction between large elements in the summation may lead to catastrophic cancellation and lead to overflow. It is not immediately clear if the summations themselves are conducted properly as we are summing from larger to smaller values. We must find a way to prevent this issue. Summing in reverse order might lead to a better result as small terms could better contribute to the calculation, but it would still be innacurate.
 
 We can improve the calculation of the variance by remembering that the sample variance is $$V[X] = \frac{1}{n-1}\sum_{i=1}^n(X_i - \bar{X})^2$$. This is a good estimate of the variance of a population if the sample is large enough (which is our case). We can thus improve our variance calculation in the following way:
 
@@ -150,12 +150,11 @@ plot_dependence_improved <-
 print(plot_dependence_improved)
 ```
 
-((Not certain why we're left with all the garbage there. The sample variance SHOULD be a good estimate of the variance))
+We have obtained better result this time by performing only one summation and comparing the numbers within the summation operation.
 
 ## Question 4: Binomial coefficient
 
-((For A, I think the n-k term might lead to some issues if k is much smaller than n. Also if n-k = 0, we get an issue with the division))
-((Not sure what other mechanism there is. The question seems to be hinting at more than just the one)).
+For expression A, an issue occurs if k = 0 or when n-k = 0 as R will be unable to compute the division. A similar issue occurs in the other sets of expressions for n-k = 0. (Are there other mechanisms?)
 
 ```{r binomial}
 # Formulae A
@@ -211,4 +210,5 @@ print(large_b)
 print(large_c)
 ```
 
+((I suspect that expressions A and B have the overflow problem because they are evaluating the products separately. There are more chances of things going wrong))
 
