@@ -212,5 +212,26 @@ print(large_b)
 print(large_c)
 ```
 
-((I suspect that expressions A and B have the overflow problem because they are evaluating the products separately. There are more chances of things going wrong))
+### Formulae A
+
+If either $k=0$ or $n-k=0$, then $denominator=0$ and if $numerator=0$, then $result=NaN$. For every other $numerator>0$ we will get $result=Inf$, because any positive integer or *Inf* divided by *0* will become *Inf*.
+
+If $n>170$, then $n!=Inf$. This behavior is called *overflow*. Off course the same applies for $k>170$, then in the denominator we will get $k!=Inf$. Therefore, if $numerator=Inf$ and $denominator=Inf$ we will get $result=NaN$.
+
+If $n=k$ and $n,k <= 170$, then the right side of the denominator will equal to *0*. Therefore, $denominator=0$ and $result=Inf$. Else if $n=k$ and $n,k > 170$, then $(prod(1:k)=Inf$ and $prod(1:(n-k))=0$. Therefore, $Inf*0=NaN$ and $result=\frac{Inf}{NaN}=NaN$.
+
+### Formulae B
+
+For this implementation *overflow* can be detected if $n-k>170$. This is because when calling $prod((k+1):n)$ with a big *n* and a small *k* *R* can't handle this calculation and evaluates this expression to *Inf*. Same applies for the the *denominator*, $prod(1:(n-k))$ will evaluate to *Inf*, too. Therefore, $result=NaN$.
+
+If $n-k<170$ and $numerator=Inf$, we get $result=\frac{prod((k+1):n)}{prod(1:(n-k))}=\frac{Inf}{0<denominator<Inf}=Inf$
+
+If $n=k$, then $\frac{prod((k+1):n)}{prod(1:(n-k))}=\frac{Integer}{0}$. Therefore, $result=Inf$
+
+### Formulae C
+
+This formulae delivers the best results for calculating diverse *n* and *k* values. This is because the critical *prod()* function is only called at the end after calculating the *quotient* for $\frac{((k+1):n)}{(1:(n-k))}$.
+
+The only issue that might come up is *underflow* by dividing values from the *numerator-vector* with the according values from the *denominator-vector*. 
+
 
