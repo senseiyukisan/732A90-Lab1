@@ -183,14 +183,16 @@ k_rand <- sample(1:2, 4, replace = TRUE)
 k1 <- n - k_rand
 k2 <- c(0, 1, 2, 4)
 
+small_a <- c()
+small_b <- c()
+small_c <- c()
+
+large_a <- c()
+large_b <- c()
+large_c <- c()
+
 for(i in 1:4){
-  small_a <- c()
-  small_b <- c()
-  small_c <- c()
-  
-  large_a <- c()
-  large_b <- c()
-  large_c <- c()
+
   # small difference between n and k
   small_a[i] <- binom_a(n[i], k1[i])
   small_b[i] <- binom_b(n[i], k1[i])
