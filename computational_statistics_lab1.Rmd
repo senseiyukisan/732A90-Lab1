@@ -11,33 +11,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Question 1: Be Careful when comparing
 
-We are asked to evaluate the following code snippet
+**1.**
+
+- In the first code snippet, the value of $x_1=1/3$ is a infinite decimal number. In the floating point number representation, only a value that is similar to it is stored in the 64bits memory capacity. There is a rounding error called underflow that occurs when we operate on this value.
+
+- In the second code snippet, no rounding error is made. Therefore, the subtraction is correct.
+
+**2.**
+
+One possibility to improve the first code snippet is doing the following:
 
 ```{r code snippets}
-x1 <- 1/3 ; x2 <- 1/4
-if (x1 - x2 == 1/12){
-  print("substraction is correct")
-} else {
-  print("substraction is wrong")
-}
-```
-
-And this code snippet
-
-```{r code snippets2}
-x1 <- 1 ; x2 <- 1/2
-if (x1 - x2 == 1/2){
-  print("substraction is correct")
-} else {
-  print("substraction is wrong")
-}
-```
-
-In the first code snippet, the value of 1/3 is a infinite decimal number. In the floating point number representation, only a value that is similar to it is stored in the 64bits memory capacity. There is a rounding error called underflow that occurs when we operate on this value. In the second code snippet, no rounding error is made.
-
-One possibility to improve the first code is doing the following:
-
-```{r code snippets3}
 x1 <- 1 ; x2 <- 1/2
 if (isTRUE(all.equal( x1 - x2, 1/2))){
   print("substraction is correct")
@@ -49,6 +33,8 @@ if (isTRUE(all.equal( x1 - x2, 1/2))){
 This works because the **all.equal** method tests for "near equality" between the two quantities instead of exact results up to machine precision.
 
 ## Question 2: Derivative
+
+**1.**
 
 Here, we evaluate the derivative of $f(x) = x$ by writing out own R function.
 
@@ -63,6 +49,8 @@ derivative <- function(x){
 
 ```
 
+**2.**
+
 We now evaluate for $x = 1$ and $x = 100000$
 
 ```{r derivative1, echo=TRUE}
@@ -71,6 +59,8 @@ x2 = 100000
 derivative(x1)
 derivative(x2)
 ```
+
+**3.**
 
 The true value of the derivative is 1.
 For $x = 1$, there is underflow in the calculation as we loose significant digits when dividing.
@@ -83,7 +73,9 @@ For $x = 100000$, we have the difference in the nominator that is evaluated to b
 library(ggplot2)
 ```
 
-This time, we are asked to write a **myvar** function to calculate the variance based on a  vector given by the exercise. We then generate a vector with 10000 random numbers with mean $10^8$ and variance 1. We then compare our function to the in-built function **var** in R. We plot the dependence of the difference with respect to the length of the vector.
+This time, we are asked to write a *myvar* function to calculate the variance based on a  vector given by the exercise. We then generate a vector with 10000 random numbers with mean $10^8$ and variance 1. We then compare our function to the in-built function *var* in R. We plot the dependence of the difference with respect to the length of the vector.
+
+**1. and 2.**
 
 ```{r variance, echo = TRUE}
 myvar <- function(x){
@@ -105,6 +97,8 @@ Y = Y[!is.na(Y)]
 
 ```
 
+**3.**
+
 and now we plot the dependence of $Y_i$ on $i$.
 
 ```{r variance_plot}
@@ -117,7 +111,9 @@ plot_dependence <- ggplot(data = data_Y) +
 print(plot_dependence)
 ```
 
-If myvar was a good estimate and close to the var function in R, we would expect to see all values of their difference to be equal to 0. This graph shows that the values are concentrated around -1. The substraction between large elements in the summation may lead to catastrophic cancellation and lead to overflow. It is not immediately clear if the summations themselves are conducted properly as we are summing from larger to smaller values. We must find a way to prevent this issue. Summing in reverse order might lead to a better result as small terms could better contribute to the calculation, but it would still be innacurate.
+If *myvar* was a good estimate and close to the var function in R, we would expect to see all values of their difference to be equal to 0. This graph shows that the values are concentrated around -1. The subtraction between large elements in the summation may lead to catastrophic cancellation and lead to overflow. It is not immediately clear if the summations themselves are conducted properly as we are summing from larger to smaller values. We must find a way to prevent this issue. Summing in reverse order might lead to a better result as small terms could better contribute to the calculation, but it would still be inaccurate.
+
+**4.**
 
 We can improve the calculation of the variance by remembering that the sample variance is $$V[X] = \frac{1}{n-1}\sum_{i=1}^n(X_i - \bar{X})^2$$. This is a good estimate of the variance of a population if the sample is large enough (which is our case). We can thus improve our variance calculation in the following way:
 
@@ -154,63 +150,68 @@ We have obtained better result this time by performing only one summation and co
 
 ## Question 4: Binomial coefficient
 
-For expression A, an issue occurs if k = 0 or when n-k = 0 as R will be unable to compute the division. A similar issue occurs in the other sets of expressions for n-k = 0. (Are there other mechanisms?)
+**1.**
+
+For all expressions, *R* will throw an error if either $k=0$ (A) or $n-k=0$ (A,B,C) as R will be unable to compute a division by zero.
+
+**2.**
 
 ```{r binomial}
 # Formulae A
 binom_a <- function(n,k){
   stopifnot(is.numeric(n), is.numeric(k))
   coeff_a <- prod(1:n) / (prod(1:k) * prod(1:(n-k)))
+  cat("Formulae A:\nn =", n, ", k =", k,
+      "\nprod(1:n):", prod(1:n),
+      "\nprod(1:k):", prod(1:k),
+      "\nprod(1:(n-k)):", prod(1:(n-k)),
+      "\n->", n, "choose", k, "=", coeff_a, "\n\n")
   return(coeff_a)
 }
 # Formulae B
 binom_b <- function(n,k){
   stopifnot(is.numeric(n), is.numeric(k))
   coeff_b <- prod((k+1):n) / prod(1:(n-k))
+  cat("Formulae B:\nn =", n, ", k =", k,
+      "\nprod((k+1):n):", prod((k+1):n),
+      "\nprod(1:(n-k)):", prod(1:(n-k)),
+      "\n->", n, "choose", k, "=", coeff_b, "\n\n")
   return(coeff_b)
 }
 # Formulae C
 binom_c <- function(n,k){
   stopifnot(is.numeric(n), is.numeric(k))
   coeff_c <- prod(((k+1):n) / (1:(n-k)))
+  cat("Formulae C:\nn =", n, ", k =", k,
+      "\nprod(((k+1):n) / (1:(n-k))):", prod(((k+1):n) / (1:(n-k))),
+      "\n->", n, "choose", k, "=", coeff_c, "\n\n")
   return(coeff_c)
 }
 
 
-# What a surprise!! R doesn't like vectors that have a length of 10^12
 n <- c(2, 10, 10^2, 10^4)
-k_rand <- sample(1:2, 4, replace = TRUE)
-k1 <- n - k_rand
+k1 <- c(1, 8, 98, 9995)
 k2 <- c(0, 1, 2, 4)
-
-small_a <- c()
-small_b <- c()
-small_c <- c()
-
-large_a <- c()
-large_b <- c()
-large_c <- c()
-
-for(i in 1:4){
-
-  # small difference between n and k
-  small_a[i] <- binom_a(n[i], k1[i])
-  small_b[i] <- binom_b(n[i], k1[i])
-  small_c[i] <- binom_c(n[i], k1[i])
-  
-  #big difference between n and k
-  large_a[i] <- binom_a(n[i], k2[i])
-  large_b[i] <- binom_b(n[i], k2[i])
-  large_c[i] <- binom_c(n[i], k2[i])
-}
-
-print(small_a)
-print(small_b)
-print(small_c)
-print(large_a)
-print(large_b)
-print(large_c)
 ```
+
+We define $n=(2, 10, 10^2, 10^4)$, $k_1=(1, 8, 98, 9995)$ and $k_2=(0, 1, 2, 4)$. In the following we will calculate the binomial coefficient for each combination of $n$ and $k_1$ as well as $n$ and $k_2$ using our three *R* expressions. This allows us to determine whether there is overflow for different input parameters for $\binom{n}{k}$. 
+
+```{r binomial2}
+for(i in 1:4){
+  
+  # Small difference between n and k
+  binom_a(n[i], k1[i])
+  binom_b(n[i], k1[i])
+  binom_c(n[i], k1[i])
+
+  # Big difference between n and k
+  binom_a(n[i], k2[i])
+  binom_b(n[i], k2[i])
+  binom_c(n[i], k2[i])
+}
+```
+
+**3.**
 
 ### Formulae A
 
