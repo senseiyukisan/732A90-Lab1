@@ -111,7 +111,7 @@ plot_dependence <- ggplot(data = data_Y) +
 print(plot_dependence)
 ```
 
-If *myvar* was a good estimate and close to the var function in R, we would expect to see all values of their difference to be equal to 0. This graph shows that the values are concentrated around -1. The subtraction between large elements in the summation may lead to catastrophic cancellation and lead to overflow. It is not immediately clear if the summations themselves are conducted properly as we are summing from larger to smaller values. We must find a way to prevent this issue. Summing in reverse order might lead to a better result as small terms could better contribute to the calculation, but it would still be inaccurate.
+If *myvar* was a good estimate and close to the var function in R, we would expect to see all values of their difference to be equal to 0. This graph shows that the values are concentrated around -1. The subtraction between large elements in the summation may lead to catastrophic cancellation and to overflow in the summation. It is not immediately clear if the summations themselves are conducted properly as we are summing from larger to smaller values. We must find a way to prevent this issue. Summing in reverse order might lead to a better result as small terms could better contribute to the calculation, but it would still be inaccurate.
 
 **4.**
 
@@ -223,7 +223,7 @@ If $n=k$ and $n,k <= 170$, then the right side of the denominator will equal to 
 
 ### Formulae B
 
-For this implementation *overflow* can be detected if $n-k>170$. This is because when calling $prod((k+1):n)$ with a big *n* and a small *k* *R* can't handle this calculation and evaluates this expression to *Inf*. Same applies for the the *denominator*, $prod(1:(n-k))$ will evaluate to *Inf*, too. Therefore, $result=NaN$.
+For this implementation *overflow* can be detected if $n-k>170$. This is because when calling $prod((k+1):n)$ with a big *n* and a small *k*, *R* can't handle this calculation and evaluates this expression to *Inf*. The same applies for the the *denominator*, $prod(1:(n-k))$ will evaluate to *Inf*, too. Therefore, $result=NaN$.
 
 If $n-k<170$ and $numerator=Inf$, we get $result=\frac{prod((k+1):n)}{prod(1:(n-k))}=\frac{Inf}{0<denominator<Inf}=Inf$
 
